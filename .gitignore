@@ -1,33 +1,91 @@
-HELP.md
+# ========================
+# JAVA / SPRING BOOT
+# ========================
 target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+*.class
 
-### STS ###
-.apt_generated
+# Logs
+*.log
+
+# Spring Boot
+*.jar
+*.war
+
+# ========================
+# MAVEN
+# ========================
+.mvn/
+mvnw
+mvnw.cmd
+
+# ========================
+# IDE - IntelliJ IDEA
+# ========================
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# ========================
+# ECLIPSE / STS
+# ========================
 .classpath
-.factorypath
 .project
-.settings
+.settings/
+.factorypath
+.apt_generated
 .springBeans
 .sts4-cache
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-
-### NetBeans ###
+# ========================
+# NETBEANS
+# ========================
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
-### VS Code ###
+# ========================
+# VS CODE
+# ========================
 .vscode/
+
+# ========================
+# MAC OS
+# ========================
+.DS_Store
+**/.DS_Store
+.AppleDouble
+.LSOverride
+
+# ========================
+# LINUX / WINDOWS
+# ========================
+*~
+*.swp
+Thumbs.db
+
+# ========================
+# DOCKER (opsiyonel ama önerilir)
+# ========================
+docker-compose.override.yml
+
+# ========================
+# ENV FILES (çok önemli)
+# ========================
+.env
+*.env
+
+# ========================
+# DATABASE / BACKUP
+# ========================
+*.sql
+*.dump
+
+# ========================
+# TEMP FILES
+# ========================
+tmp/
+temp/
