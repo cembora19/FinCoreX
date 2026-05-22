@@ -2,6 +2,7 @@ package com.fincorex.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.util.UUID;
 
 @Entity
@@ -13,8 +14,7 @@ import java.util.UUID;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(columnDefinition = "uuid")
+    @GeneratedValue
     private UUID id;
 
     @Column(nullable = false)

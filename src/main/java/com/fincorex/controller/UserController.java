@@ -1,7 +1,9 @@
 package com.fincorex.controller;
 
-import com.fincorex.entity.User;
+import com.fincorex.dto.request.CreateUserRequest;
+import com.fincorex.dto.response.UserResponse;
 import com.fincorex.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,12 +19,12 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
+    public UserResponse createUser(@Valid @RequestBody CreateUserRequest request) {
+        return userService.createUser(request);
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<UserResponse> getAllUsers() {
         return userService.getAllUsers();
     }
 }
