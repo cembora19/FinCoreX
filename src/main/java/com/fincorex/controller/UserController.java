@@ -1,6 +1,7 @@
 package com.fincorex.controller;
 
 import com.fincorex.dto.request.CreateUserRequest;
+import com.fincorex.dto.response.ApiResponse;
 import com.fincorex.dto.response.UserResponse;
 import com.fincorex.service.UserService;
 import jakarta.validation.Valid;
@@ -19,12 +20,12 @@ public class UserController {
     }
 
     @PostMapping
-    public UserResponse createUser(@Valid @RequestBody CreateUserRequest request) {
-        return userService.createUser(request);
+    public ApiResponse<UserResponse> createUser(@Valid @RequestBody CreateUserRequest request) {
+        return ApiResponse.success(userService.createUser(request), "User created successfully");
     }
 
     @GetMapping
-    public List<UserResponse> getAllUsers() {
-        return userService.getAllUsers();
+    public ApiResponse<List<UserResponse>> getAllUsers() {
+        return ApiResponse.success(userService.getAllUsers());
     }
 }
