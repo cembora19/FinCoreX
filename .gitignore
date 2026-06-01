@@ -68,21 +68,24 @@ out/
 Thumbs.db
 
 # ========================
-# DOCKER (opsiyonel ama önerilir)
+# DOCKER
 # ========================
 docker-compose.override.yml
 
 # ========================
-# ENV FILES (çok önemli)
+# ENV FILES
 # ========================
 .env
 *.env
 
 # ========================
-# DATABASE / BACKUP
+# DATABASE BACKUPS
 # ========================
-*.sql
 *.dump
+
+# Büyük SQL dump dosyaları
+backup/
+database-backups/
 
 # ========================
 # TEMP FILES

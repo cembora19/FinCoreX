@@ -26,4 +26,7 @@ public class Transaction {
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(length = 255)
+    private String description;
 }
