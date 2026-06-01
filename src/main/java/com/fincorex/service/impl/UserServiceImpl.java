@@ -3,26 +3,26 @@ package com.fincorex.service.impl;
 import com.fincorex.dto.request.CreateUserRequest;
 import com.fincorex.dto.response.UserResponse;
 import com.fincorex.entity.User;
-import com.fincorex.entity.Wallet;
 import com.fincorex.repository.UserRepository;
-import com.fincorex.repository.WalletRepository;
 import com.fincorex.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import com.fincorex.event.UserCreatedEvent;
+import org.springframework.context.ApplicationEventPublisher;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final WalletRepository walletRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public UserServiceImpl(UserRepository userRepository,
-            WalletRepository walletRepository) {
+            ApplicationEventPublisher eventPublisher) {
+
         this.userRepository = userRepository;
-        this.walletRepository = walletRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -35,11 +35,8 @@ public class UserServiceImpl implements UserService {
 
         User savedUser = userRepository.save(user);
 
-        Wallet wallet = new Wallet();
-        wallet.setUser(savedUser);
-        wallet.setBalance(BigDecimal.ZERO);
-
-        walletRepository.save(wallet);
+        eventPublisher.publishEvent(
+                new UserCreatedEvent(savedUser.getId()));
 
         return new UserResponse(
                 savedUser.getId(),
