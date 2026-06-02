@@ -1,11 +1,13 @@
 package com.fincorex.controller;
 
+import com.fincorex.dto.request.DepositRequest;
+import com.fincorex.dto.request.WithdrawRequest;
 import com.fincorex.dto.response.ApiResponse;
 import com.fincorex.service.WalletService;
-import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.util.UUID;
+import jakarta.validation.Valid;
+
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/wallets")
@@ -19,17 +21,23 @@ public class WalletController {
 
     @PostMapping("/deposit")
     public ApiResponse<Void> deposit(
-            @RequestParam UUID userId,
-            @RequestParam BigDecimal amount) {
-        walletService.deposit(userId, amount);
-        return ApiResponse.success(null, "Deposit successful");
+            @Valid @RequestBody DepositRequest request) {
+
+        walletService.deposit(request);
+
+        return ApiResponse.success(
+                null,
+                "Deposit successful");
     }
 
     @PostMapping("/withdraw")
     public ApiResponse<Void> withdraw(
-            @RequestParam UUID userId,
-            @RequestParam BigDecimal amount) {
-        walletService.withdraw(userId, amount);
-        return ApiResponse.success(null, "Withdraw successful");
+            @Valid @RequestBody WithdrawRequest request) {
+
+        walletService.withdraw(request);
+
+        return ApiResponse.success(
+                null,
+                "Withdraw successful");
     }
 }
