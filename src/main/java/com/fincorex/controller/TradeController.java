@@ -2,6 +2,7 @@ package com.fincorex.controller;
 
 import com.fincorex.dto.request.TradeRequest;
 import com.fincorex.dto.response.ApiResponse;
+import com.fincorex.dto.response.TradeResponse;
 import com.fincorex.service.TradeService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,10 +19,10 @@ public class TradeController {
     }
 
     @PostMapping
-    public ApiResponse<Void> execute(@Valid @RequestBody TradeRequest request) {
+    public ApiResponse<TradeResponse> execute(@Valid @RequestBody TradeRequest request) {
 
-        tradeService.executeTrade(request);
+        TradeResponse response = tradeService.executeTrade(request);
 
-        return ApiResponse.success(null, "Trade executed");
+        return ApiResponse.success(response, "Trade executed");
     }
 }

@@ -2,6 +2,7 @@ package com.fincorex.service.impl;
 
 import com.fincorex.dto.request.TradeRequest;
 import com.fincorex.dto.request.TradeType;
+import com.fincorex.dto.response.TradeResponse;
 import com.fincorex.entity.*;
 import com.fincorex.repository.*;
 import com.fincorex.service.TradeService;
@@ -34,7 +35,7 @@ public class TradeServiceImpl implements TradeService {
 
     @Override
     @Transactional
-    public void executeTrade(TradeRequest request) {
+    public TradeResponse executeTrade(TradeRequest request) {
 
         // 1. Wallet
         Wallet wallet = walletRepository.findById(request.walletId())
@@ -118,5 +119,14 @@ public class TradeServiceImpl implements TradeService {
                         : TransactionType.WITHDRAW);
 
         transactionRepository.save(tx);
+
+        return new TradeResponse(
+                wallet.getId(),
+                request.type().name(),
+                asset.getSymbol(),
+                request.quantity(),
+                asset.getPrice(),
+                tradeAmount,
+                wallet.getBalance());
     }
 }
