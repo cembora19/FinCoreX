@@ -28,4 +28,7 @@ public class WalletAsset {
 
     @Column(nullable = false, precision = 19, scale = 4)
     private BigDecimal quantity;
+
+    @Column(name = "average_buy_price", nullable = false, precision = 19, scale = 4)
+    private BigDecimal averageBuyPrice;
 }

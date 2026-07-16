@@ -2,5 +2,7 @@ package com.fincorex.entity;
 
 public enum TransactionType {
     DEPOSIT,
-    WITHDRAW
+    WITHDRAW,
+    BUY,
+    SELL
 }

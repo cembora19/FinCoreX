@@ -71,9 +71,16 @@ public class TradeServiceImpl implements TradeService {
                 walletAsset.setWallet(wallet);
                 walletAsset.setAsset(asset);
                 walletAsset.setQuantity(request.quantity());
+                walletAsset.setAverageBuyPrice(asset.getPrice());
             } else {
+                BigDecimal currentCost = walletAsset.getAverageBuyPrice()
+                        .multiply(walletAsset.getQuantity());
+                BigDecimal newQuantity = walletAsset.getQuantity().add(request.quantity());
+                walletAsset.setAverageBuyPrice(
+                        currentCost.add(tradeAmount)
+                                .divide(newQuantity, 4, java.math.RoundingMode.HALF_UP));
                 walletAsset.setQuantity(
-                        walletAsset.getQuantity().add(request.quantity()));
+                        newQuantity);
             }
         }
 
@@ -113,10 +120,9 @@ public class TradeServiceImpl implements TradeService {
 
         tx.setCreatedAt(LocalDateTime.now());
 
-        tx.setType(
-                request.type() == TradeType.BUY
-                        ? TransactionType.DEPOSIT
-                        : TransactionType.WITHDRAW);
+        tx.setType(request.type() == TradeType.BUY
+                ? TransactionType.BUY
+                : TransactionType.SELL);
 
         transactionRepository.save(tx);
 

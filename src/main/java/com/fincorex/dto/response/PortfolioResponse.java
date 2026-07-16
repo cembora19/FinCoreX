@@ -7,12 +7,21 @@ import java.util.UUID;
 public record PortfolioResponse(
         UUID walletId,
         BigDecimal balance,
+        BigDecimal assetValue,
+        BigDecimal totalValue,
+        BigDecimal totalCost,
+        BigDecimal profitLoss,
+        BigDecimal profitLossPercentage,
         List<AssetPosition> assets) {
 
     public record AssetPosition(
             String symbol,
             BigDecimal quantity,
             BigDecimal currentPrice,
-            BigDecimal value) {
+            BigDecimal value,
+            BigDecimal averageBuyPrice,
+            BigDecimal cost,
+            BigDecimal profitLoss,
+            BigDecimal profitLossPercentage) {
     }
 }

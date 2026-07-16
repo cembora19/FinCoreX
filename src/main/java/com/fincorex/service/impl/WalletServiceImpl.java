@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.math.RoundingMode;
 
 @Service
 public class WalletServiceImpl implements WalletService {
@@ -95,18 +96,46 @@ public class WalletServiceImpl implements WalletService {
         List<PortfolioResponse.AssetPosition> positions = assets.stream().map(a -> {
 
             BigDecimal value = a.getQuantity().multiply(a.getAsset().getPrice());
+            BigDecimal cost = a.getQuantity().multiply(a.getAverageBuyPrice());
+            BigDecimal profitLoss = value.subtract(cost);
 
             return new PortfolioResponse.AssetPosition(
                     a.getAsset().getSymbol(),
                     a.getQuantity(),
                     a.getAsset().getPrice(),
-                    value);
+                    value,
+                    a.getAverageBuyPrice(),
+                    cost,
+                    profitLoss,
+                    percentage(profitLoss, cost));
         }).toList();
+
+        BigDecimal assetValue = positions.stream()
+                .map(PortfolioResponse.AssetPosition::value)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalCost = positions.stream()
+                .map(PortfolioResponse.AssetPosition::cost)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal profitLoss = assetValue.subtract(totalCost);
 
         return new PortfolioResponse(
                 wallet.getId(),
                 wallet.getBalance(),
+                assetValue,
+                wallet.getBalance().add(assetValue),
+                totalCost,
+                profitLoss,
+                percentage(profitLoss, totalCost),
                 positions);
+    }
+
+    private BigDecimal percentage(BigDecimal value, BigDecimal base) {
+        if (base.signum() == 0) {
+            return BigDecimal.ZERO;
+        }
+
+        return value.multiply(BigDecimal.valueOf(100))
+                .divide(base, 2, RoundingMode.HALF_UP);
     }
 
 }
