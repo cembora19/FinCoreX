@@ -14,7 +14,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiResponse<String> handleGeneral(Exception ex) {
-        return ApiResponse.error("Error: " + ex.getMessage());
+        return ApiResponse.error("Unexpected internal error");
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ApiResponse<String> handleResourceNotFound(ResourceNotFoundException ex) {
+        return ApiResponse.error(ex.getMessage());
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiResponse<String> handleBusiness(BusinessException ex) {
+        return ApiResponse.error(ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

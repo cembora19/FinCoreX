@@ -6,6 +6,9 @@ import com.fincorex.dto.response.TradeResponse;
 import com.fincorex.entity.*;
 import com.fincorex.repository.*;
 import com.fincorex.service.TradeService;
+import com.fincorex.exception.InsufficientAssetException;
+import com.fincorex.exception.InsufficientBalanceException;
+import com.fincorex.exception.ResourceNotFoundException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,11 +42,11 @@ public class TradeServiceImpl implements TradeService {
 
         // 1. Wallet
         Wallet wallet = walletRepository.findById(request.walletId())
-                .orElseThrow(() -> new RuntimeException("Wallet not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Wallet", request.walletId()));
 
         // 2. Asset
         Asset asset = assetRepository.findBySymbol(request.assetSymbol())
-                .orElseThrow(() -> new RuntimeException("Asset not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Asset", request.assetSymbol()));
 
         // 3. WalletAsset (PROFESYONEL QUERY)
         WalletAsset walletAsset = walletAssetRepository
@@ -60,7 +63,7 @@ public class TradeServiceImpl implements TradeService {
             tradeAmount = asset.getPrice().multiply(request.quantity());
 
             if (wallet.getBalance().compareTo(tradeAmount) < 0) {
-                throw new RuntimeException("Insufficient balance");
+                throw new InsufficientBalanceException();
             }
 
             wallet.setBalance(wallet.getBalance().subtract(tradeAmount));
@@ -89,7 +92,7 @@ public class TradeServiceImpl implements TradeService {
 
             if (walletAsset == null ||
                     walletAsset.getQuantity().compareTo(request.quantity()) < 0) {
-                throw new RuntimeException("Not enough asset");
+                throw new InsufficientAssetException();
             }
 
             tradeAmount = asset.getPrice().multiply(request.quantity());

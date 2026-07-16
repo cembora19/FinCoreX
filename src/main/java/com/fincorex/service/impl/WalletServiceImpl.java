@@ -13,6 +13,8 @@ import com.fincorex.entity.Transaction;
 import com.fincorex.entity.TransactionType;
 import com.fincorex.repository.TransactionRepository;
 import com.fincorex.repository.WalletAssetRepository;
+import com.fincorex.exception.InsufficientBalanceException;
+import com.fincorex.exception.ResourceNotFoundException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -42,7 +44,7 @@ public class WalletServiceImpl implements WalletService {
     public void deposit(DepositRequest request) {
 
         Wallet wallet = walletRepository.findByUserId(request.userId())
-                .orElseThrow(() -> new RuntimeException("Wallet not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Wallet", request.userId()));
 
         wallet.setBalance(wallet.getBalance().add(request.amount()));
 
@@ -64,10 +66,10 @@ public class WalletServiceImpl implements WalletService {
     public void withdraw(WithdrawRequest request) {
 
         Wallet wallet = walletRepository.findByUserId(request.userId())
-                .orElseThrow(() -> new RuntimeException("Wallet not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Wallet", request.userId()));
 
         if (wallet.getBalance().compareTo(request.amount()) < 0) {
-            throw new RuntimeException("Insufficient balance");
+            throw new InsufficientBalanceException();
         }
 
         wallet.setBalance(wallet.getBalance().subtract(request.amount()));
@@ -89,7 +91,7 @@ public class WalletServiceImpl implements WalletService {
     public PortfolioResponse getPortfolio(UUID walletId) {
 
         Wallet wallet = walletRepository.findById(walletId)
-                .orElseThrow(() -> new RuntimeException("Wallet not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Wallet", walletId));
 
         List<WalletAsset> assets = walletAssetRepository.findByWalletId(walletId);
 

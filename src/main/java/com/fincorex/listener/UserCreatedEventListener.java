@@ -7,6 +7,7 @@ import com.fincorex.repository.UserRepository;
 import com.fincorex.repository.WalletRepository;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import com.fincorex.exception.ResourceNotFoundException;
 
 import java.math.BigDecimal;
 
@@ -27,7 +28,7 @@ public class UserCreatedEventListener {
     public void handleUserCreated(UserCreatedEvent event) {
 
         User user = userRepository.findById(event.userId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User", event.userId()));
 
         Wallet wallet = new Wallet();
         wallet.setUser(user);
