@@ -3,6 +3,7 @@ package com.fincorex.service.impl;
 import com.fincorex.dto.request.DepositRequest;
 import com.fincorex.dto.request.WithdrawRequest;
 import com.fincorex.dto.response.PortfolioResponse;
+import com.fincorex.dto.response.TransactionResponse;
 import com.fincorex.entity.Wallet;
 import com.fincorex.entity.WalletAsset;
 import com.fincorex.repository.WalletRepository;
@@ -129,6 +130,22 @@ public class WalletServiceImpl implements WalletService {
                 profitLoss,
                 percentage(profitLoss, totalCost),
                 positions);
+    }
+
+    @Override
+    public List<TransactionResponse> getTransactionHistory(UUID walletId) {
+        walletRepository.findById(walletId)
+                .orElseThrow(() -> new ResourceNotFoundException("Wallet", walletId));
+
+        return transactionRepository.findByWalletIdOrderByCreatedAtDesc(walletId)
+                .stream()
+                .map(transaction -> new TransactionResponse(
+                        transaction.getId(),
+                        transaction.getType(),
+                        transaction.getAmount(),
+                        transaction.getDescription(),
+                        transaction.getCreatedAt()))
+                .toList();
     }
 
     private BigDecimal percentage(BigDecimal value, BigDecimal base) {

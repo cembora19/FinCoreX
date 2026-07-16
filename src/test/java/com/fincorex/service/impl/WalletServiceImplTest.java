@@ -8,6 +8,7 @@ import com.fincorex.entity.TransactionType;
 import com.fincorex.entity.Wallet;
 import com.fincorex.entity.WalletAsset;
 import com.fincorex.dto.response.PortfolioResponse;
+import com.fincorex.dto.response.TransactionResponse;
 import com.fincorex.exception.InsufficientBalanceException;
 import com.fincorex.exception.ResourceNotFoundException;
 import com.fincorex.repository.TransactionRepository;
@@ -21,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -109,6 +111,33 @@ class WalletServiceImplTest {
                 new DepositRequest(userId, new BigDecimal("25.00"))));
 
         verifyNoInteractions(transactionRepository);
+    }
+
+    @Test
+    void shouldReturnWalletTransactionHistoryAsResponseDtos() {
+        UUID walletId = UUID.randomUUID();
+        Wallet wallet = new Wallet();
+        wallet.setId(walletId);
+
+        Transaction transaction = new Transaction();
+        transaction.setId(UUID.randomUUID());
+        transaction.setWallet(wallet);
+        transaction.setType(TransactionType.BUY);
+        transaction.setAmount(new BigDecimal("100.00"));
+        transaction.setDescription("BUY 1 BTC @ 100");
+        transaction.setCreatedAt(LocalDateTime.now());
+
+        when(walletRepository.findById(walletId)).thenReturn(Optional.of(wallet));
+        when(transactionRepository.findByWalletIdOrderByCreatedAtDesc(walletId))
+                .thenReturn(List.of(transaction));
+
+        List<TransactionResponse> response = walletService.getTransactionHistory(walletId);
+
+        assertEquals(1, response.size());
+        assertEquals(transaction.getId(), response.getFirst().id());
+        assertEquals(TransactionType.BUY, response.getFirst().type());
+        assertEquals(0, response.getFirst().amount().compareTo(new BigDecimal("100.00")));
+        assertEquals(transaction.getDescription(), response.getFirst().description());
     }
 
     @Test
