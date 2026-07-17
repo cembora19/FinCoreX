@@ -119,7 +119,9 @@ public class WalletServiceImpl implements WalletService {
         BigDecimal totalCost = positions.stream()
                 .map(PortfolioResponse.AssetPosition::cost)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal profitLoss = assetValue.subtract(totalCost);
+        BigDecimal unrealizedProfitLoss = assetValue.subtract(totalCost);
+        BigDecimal realizedProfitLoss = wallet.getRealizedProfitLoss();
+        BigDecimal profitLoss = unrealizedProfitLoss.add(realizedProfitLoss);
 
         return new PortfolioResponse(
                 wallet.getId(),
@@ -127,6 +129,8 @@ public class WalletServiceImpl implements WalletService {
                 assetValue,
                 wallet.getBalance().add(assetValue),
                 totalCost,
+                unrealizedProfitLoss,
+                realizedProfitLoss,
                 profitLoss,
                 percentage(profitLoss, totalCost),
                 positions);
