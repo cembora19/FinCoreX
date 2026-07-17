@@ -1,5 +1,7 @@
 package com.fincorex.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fincorex.dto.response.ApiResponse;
 import com.fincorex.entity.User;
 import com.fincorex.repository.UserRepository;
 import com.fincorex.security.JwtAuthenticationFilter;
@@ -18,6 +20,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import jakarta.servlet.http.HttpServletResponse;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Configuration
 @EnableWebSecurity
@@ -62,10 +68,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
-            JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+            JwtAuthenticationFilter jwtAuthenticationFilter,
+            ObjectMapper objectMapper) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, exception) ->
+                                writeSecurityError(response, objectMapper, HttpServletResponse.SC_UNAUTHORIZED,
+                                        "Authentication required"))
+                        .accessDeniedHandler((request, response, exception) ->
+                                writeSecurityError(response, objectMapper, HttpServletResponse.SC_FORBIDDEN,
+                                        "Access denied")))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/auth/**",
@@ -79,5 +93,15 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    private void writeSecurityError(
+            HttpServletResponse response,
+            ObjectMapper objectMapper,
+            int status,
+            String message) throws java.io.IOException {
+        response.setStatus(status);
+        response.setContentType(APPLICATION_JSON_VALUE);
+        response.getWriter().write(objectMapper.writeValueAsString(ApiResponse.error(message)));
     }
 }
