@@ -2,6 +2,7 @@ package com.fincorex.exception;
 
 import com.fincorex.dto.response.ApiResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +28,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiResponse<String> handleBusiness(BusinessException ex) {
         return ApiResponse.error(ex.getMessage());
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ApiResponse<String> handleAuthentication(AuthenticationException ex) {
+        return ApiResponse.error("Invalid email or password");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
