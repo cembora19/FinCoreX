@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 import com.fincorex.event.UserCreatedEvent;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
@@ -17,12 +18,16 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository,
-            ApplicationEventPublisher eventPublisher) {
+    public UserServiceImpl(
+            UserRepository userRepository,
+            ApplicationEventPublisher eventPublisher,
+            PasswordEncoder passwordEncoder) {
 
         this.userRepository = userRepository;
         this.eventPublisher = eventPublisher;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -32,6 +37,7 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setName(request.name());
         user.setEmail(request.email());
+        user.setPasswordHash(passwordEncoder.encode(request.password()));
 
         User savedUser = userRepository.save(user);
 
