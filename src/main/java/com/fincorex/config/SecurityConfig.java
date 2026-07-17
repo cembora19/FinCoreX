@@ -74,6 +74,7 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/health")
                         .permitAll()
+                        .requestMatchers("/api/users/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
