@@ -22,6 +22,9 @@ public class Wallet {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal balance = BigDecimal.ZERO;
 
+    @Column(name = "realized_profit_loss", nullable = false, precision = 19, scale = 2)
+    private BigDecimal realizedProfitLoss = BigDecimal.ZERO;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false, unique = true)
     private User user;

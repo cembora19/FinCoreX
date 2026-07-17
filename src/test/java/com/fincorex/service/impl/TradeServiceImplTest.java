@@ -116,6 +116,7 @@ class TradeServiceImplTest {
                 walletId, "BTC", new BigDecimal("1.0000"), TradeType.SELL));
 
         assertEquals(0, wallet.getBalance().compareTo(new BigDecimal("10.00")));
+        assertEquals(0, wallet.getRealizedProfitLoss().compareTo(new BigDecimal("2.00")));
         assertEquals(0, walletAsset.getQuantity().compareTo(new BigDecimal("1.0000")));
         assertEquals(0, walletAsset.getAverageBuyPrice().compareTo(new BigDecimal("8.0000")));
 

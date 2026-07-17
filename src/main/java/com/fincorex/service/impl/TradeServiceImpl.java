@@ -102,10 +102,15 @@ public class TradeServiceImpl implements TradeService {
 
             tradeAmount = asset.getPrice().multiply(request.quantity());
 
+            BigDecimal realizedProfitLoss = asset.getPrice()
+                    .subtract(walletAsset.getAverageBuyPrice())
+                    .multiply(request.quantity());
+
             walletAsset.setQuantity(
                     walletAsset.getQuantity().subtract(request.quantity()));
 
             wallet.setBalance(wallet.getBalance().add(tradeAmount));
+            wallet.setRealizedProfitLoss(wallet.getRealizedProfitLoss().add(realizedProfitLoss));
         }
 
         // 4. SAVE CHANGES

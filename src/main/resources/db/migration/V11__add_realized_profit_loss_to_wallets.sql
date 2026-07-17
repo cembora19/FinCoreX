@@ -1,0 +1,2 @@
+ALTER TABLE wallets
+ADD COLUMN realized_profit_loss NUMERIC(19,2) NOT NULL DEFAULT 0;

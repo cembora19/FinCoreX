@@ -166,6 +166,8 @@ class WalletServiceImplTest {
         assertEquals(0, response.assetValue().compareTo(new BigDecimal("30.00")));
         assertEquals(0, response.totalValue().compareTo(new BigDecimal("130.00")));
         assertEquals(0, response.totalCost().compareTo(new BigDecimal("20.00")));
+        assertEquals(0, response.unrealizedProfitLoss().compareTo(new BigDecimal("10.00")));
+        assertEquals(0, response.realizedProfitLoss().compareTo(BigDecimal.ZERO));
         assertEquals(0, response.profitLoss().compareTo(new BigDecimal("10.00")));
         assertEquals(0, response.profitLossPercentage().compareTo(new BigDecimal("50.00")));
         assertEquals(0, response.assets().getFirst().profitLoss().compareTo(new BigDecimal("10.00")));

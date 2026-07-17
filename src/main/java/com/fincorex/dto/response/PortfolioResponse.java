@@ -10,6 +10,8 @@ public record PortfolioResponse(
         BigDecimal assetValue,
         BigDecimal totalValue,
         BigDecimal totalCost,
+        BigDecimal unrealizedProfitLoss,
+        BigDecimal realizedProfitLoss,
         BigDecimal profitLoss,
         BigDecimal profitLossPercentage,
         List<AssetPosition> assets) {
