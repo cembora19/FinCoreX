@@ -13,6 +13,7 @@ import com.fincorex.repository.AssetRepository;
 import com.fincorex.repository.TransactionRepository;
 import com.fincorex.repository.WalletAssetRepository;
 import com.fincorex.repository.WalletRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 class TradeServiceImplTest {
@@ -45,6 +47,9 @@ class TradeServiceImplTest {
     @Mock
     private TransactionRepository transactionRepository;
 
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
+
     private TradeServiceImpl tradeService;
     private UUID walletId;
     private Wallet wallet;
@@ -56,7 +61,8 @@ class TradeServiceImplTest {
                 walletRepository,
                 assetRepository,
                 walletAssetRepository,
-                transactionRepository);
+                transactionRepository,
+                eventPublisher);
 
         walletId = UUID.randomUUID();
         wallet = new Wallet();
@@ -91,6 +97,7 @@ class TradeServiceImplTest {
         ArgumentCaptor<Transaction> transactionCaptor = ArgumentCaptor.forClass(Transaction.class);
         verify(transactionRepository).save(transactionCaptor.capture());
         assertEquals(TransactionType.BUY, transactionCaptor.getValue().getType());
+        verify(eventPublisher).publishEvent(any(com.fincorex.event.TradeExecutedEvent.class));
     }
 
     @Test
@@ -115,6 +122,7 @@ class TradeServiceImplTest {
         ArgumentCaptor<Transaction> transactionCaptor = ArgumentCaptor.forClass(Transaction.class);
         verify(transactionRepository).save(transactionCaptor.capture());
         assertEquals(TransactionType.SELL, transactionCaptor.getValue().getType());
+        verify(eventPublisher).publishEvent(any(com.fincorex.event.TradeExecutedEvent.class));
     }
 
     @Test

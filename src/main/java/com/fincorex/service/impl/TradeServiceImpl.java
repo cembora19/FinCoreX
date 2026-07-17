@@ -9,6 +9,8 @@ import com.fincorex.service.TradeService;
 import com.fincorex.exception.InsufficientAssetException;
 import com.fincorex.exception.InsufficientBalanceException;
 import com.fincorex.exception.ResourceNotFoundException;
+import com.fincorex.event.TradeExecutedEvent;
+import org.springframework.context.ApplicationEventPublisher;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,17 +25,20 @@ public class TradeServiceImpl implements TradeService {
     private final AssetRepository assetRepository;
     private final WalletAssetRepository walletAssetRepository;
     private final TransactionRepository transactionRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public TradeServiceImpl(
             WalletRepository walletRepository,
             AssetRepository assetRepository,
             WalletAssetRepository walletAssetRepository,
-            TransactionRepository transactionRepository) {
+            TransactionRepository transactionRepository,
+            ApplicationEventPublisher eventPublisher) {
 
         this.walletRepository = walletRepository;
         this.assetRepository = assetRepository;
         this.walletAssetRepository = walletAssetRepository;
         this.transactionRepository = transactionRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -128,6 +133,15 @@ public class TradeServiceImpl implements TradeService {
                 : TransactionType.SELL);
 
         transactionRepository.save(tx);
+
+        eventPublisher.publishEvent(new TradeExecutedEvent(
+                wallet.getId(),
+                request.type(),
+                asset.getSymbol(),
+                request.quantity(),
+                asset.getPrice(),
+                tradeAmount,
+                tx.getCreatedAt()));
 
         return new TradeResponse(
                 wallet.getId(),
