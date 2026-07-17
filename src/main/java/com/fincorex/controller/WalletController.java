@@ -5,6 +5,8 @@ import com.fincorex.dto.request.WithdrawRequest;
 import com.fincorex.dto.response.ApiResponse;
 import com.fincorex.dto.response.PortfolioResponse;
 import com.fincorex.dto.response.TransactionResponse;
+import com.fincorex.dto.response.AuditLogResponse;
+import com.fincorex.service.AuditLogService;
 import com.fincorex.service.WalletService;
 
 import jakarta.validation.Valid;
@@ -19,9 +21,11 @@ import org.springframework.web.bind.annotation.*;
 public class WalletController {
 
     private final WalletService walletService;
+    private final AuditLogService auditLogService;
 
-    public WalletController(WalletService walletService) {
+    public WalletController(WalletService walletService, AuditLogService auditLogService) {
         this.walletService = walletService;
+        this.auditLogService = auditLogService;
     }
 
     @PostMapping("/deposit")
@@ -56,5 +60,11 @@ public class WalletController {
     public ApiResponse<List<TransactionResponse>> getTransactionHistory(
             @PathVariable UUID walletId) {
         return ApiResponse.success(walletService.getTransactionHistory(walletId));
+    }
+
+    @GetMapping("/{walletId}/audit-logs")
+    public ApiResponse<List<AuditLogResponse>> getAuditLogs(
+            @PathVariable UUID walletId) {
+        return ApiResponse.success(auditLogService.getWalletAuditLogs(walletId));
     }
 }
