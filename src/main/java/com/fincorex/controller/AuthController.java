@@ -6,6 +6,7 @@ import com.fincorex.dto.response.ApiResponse;
 import com.fincorex.dto.response.AuthResponse;
 import com.fincorex.service.AuthService;
 import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,11 +23,13 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @SecurityRequirements
     public ApiResponse<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
         return ApiResponse.success(authService.register(request), "Registration successful");
     }
 
     @PostMapping("/login")
+    @SecurityRequirements
     public ApiResponse<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         return ApiResponse.success(authService.login(request), "Login successful");
     }
