@@ -41,6 +41,8 @@ services:
       DB_URL: jdbc:postgresql://postgres:5432/appdb
       DB_USERNAME: ${POSTGRES_USER:-postgres}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-123456}
+      JWT_SECRET: ${JWT_SECRET:-Zm9yLWRlbW8tb25seS1maW5jb3JleC1qd3Qtc2VjcmV0LWtleS0zMmJ5dGVz}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-86400000}
     depends_on:
       postgres:
         condition: service_healthy
