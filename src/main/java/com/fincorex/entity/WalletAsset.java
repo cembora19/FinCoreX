@@ -18,6 +18,9 @@ public class WalletAsset {
     @GeneratedValue
     private UUID id;
 
+    @Version
+    private long version;
+
     @ManyToOne
     @JoinColumn(name = "wallet_id", nullable = false)
     private Wallet wallet;

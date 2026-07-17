@@ -6,6 +6,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import com.fincorex.PostgresTestContainerInitializer;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -17,6 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@ContextConfiguration(initializers = PostgresTestContainerInitializer.class)
 class SecurityConfigTest {
 
     @Autowired
@@ -53,5 +56,12 @@ class SecurityConfigTest {
     void shouldAllowAdminRoleToListUsers() throws Exception {
         mockMvc.perform(get("/api/users"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void shouldExposeDependencyAwareHealthEndpoint() throws Exception {
+        mockMvc.perform(get("/actuator/health"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("UP"));
     }
 }

@@ -12,6 +12,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
+import java.util.Locale;
+import com.fincorex.exception.EmailAlreadyUsedException;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -34,9 +36,14 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponse createUser(CreateUserRequest request) {
 
+        String email = request.email().trim().toLowerCase(Locale.ROOT);
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new EmailAlreadyUsedException(email);
+        }
+
         User user = new User();
         user.setName(request.name());
-        user.setEmail(request.email());
+        user.setEmail(email);
         user.setPasswordHash(passwordEncoder.encode(request.password()));
 
         User savedUser = userRepository.save(user);

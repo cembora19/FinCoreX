@@ -58,7 +58,7 @@ class WalletServiceImplTest {
         UUID userId = UUID.randomUUID();
         Wallet wallet = new Wallet();
         wallet.setBalance(new BigDecimal("100.00"));
-        when(walletRepository.findByUserId(userId)).thenReturn(Optional.of(wallet));
+        when(walletRepository.findByUserIdForUpdate(userId)).thenReturn(Optional.of(wallet));
 
         walletService.deposit(new DepositRequest(userId, new BigDecimal("25.00")));
 
@@ -76,7 +76,7 @@ class WalletServiceImplTest {
         UUID userId = UUID.randomUUID();
         Wallet wallet = new Wallet();
         wallet.setBalance(new BigDecimal("100.00"));
-        when(walletRepository.findByUserId(userId)).thenReturn(Optional.of(wallet));
+        when(walletRepository.findByUserIdForUpdate(userId)).thenReturn(Optional.of(wallet));
 
         walletService.withdraw(new WithdrawRequest(userId, new BigDecimal("40.00")));
 
@@ -94,7 +94,7 @@ class WalletServiceImplTest {
         UUID userId = UUID.randomUUID();
         Wallet wallet = new Wallet();
         wallet.setBalance(new BigDecimal("10.00"));
-        when(walletRepository.findByUserId(userId)).thenReturn(Optional.of(wallet));
+        when(walletRepository.findByUserIdForUpdate(userId)).thenReturn(Optional.of(wallet));
 
         assertThrows(InsufficientBalanceException.class, () -> walletService.withdraw(
                 new WithdrawRequest(userId, new BigDecimal("25.00"))));
@@ -105,7 +105,7 @@ class WalletServiceImplTest {
     @Test
     void shouldRejectDepositWhenWalletDoesNotExist() {
         UUID userId = UUID.randomUUID();
-        when(walletRepository.findByUserId(userId)).thenReturn(Optional.empty());
+        when(walletRepository.findByUserIdForUpdate(userId)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> walletService.deposit(
                 new DepositRequest(userId, new BigDecimal("25.00"))));

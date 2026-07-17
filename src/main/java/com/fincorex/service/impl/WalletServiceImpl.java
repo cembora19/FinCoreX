@@ -44,7 +44,7 @@ public class WalletServiceImpl implements WalletService {
     @Transactional
     public void deposit(DepositRequest request) {
 
-        Wallet wallet = walletRepository.findByUserId(request.userId())
+        Wallet wallet = walletRepository.findByUserIdForUpdate(request.userId())
                 .orElseThrow(() -> new ResourceNotFoundException("Wallet", request.userId()));
 
         wallet.setBalance(wallet.getBalance().add(request.amount()));
@@ -66,7 +66,7 @@ public class WalletServiceImpl implements WalletService {
     @Transactional
     public void withdraw(WithdrawRequest request) {
 
-        Wallet wallet = walletRepository.findByUserId(request.userId())
+        Wallet wallet = walletRepository.findByUserIdForUpdate(request.userId())
                 .orElseThrow(() -> new ResourceNotFoundException("Wallet", request.userId()));
 
         if (wallet.getBalance().compareTo(request.amount()) < 0) {

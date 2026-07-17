@@ -19,6 +19,9 @@ public class Wallet {
     @Column(columnDefinition = "uuid")
     private UUID id;
 
+    @Version
+    private long version;
+
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal balance = BigDecimal.ZERO;
 

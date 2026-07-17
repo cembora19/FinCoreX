@@ -19,7 +19,19 @@ public class JwtService {
     public JwtService(
             @Value("${security.jwt.secret}") String secret,
             @Value("${security.jwt.expiration-ms}") long expirationMillis) {
-        this.signingKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+        if (expirationMillis <= 0) {
+            throw new IllegalArgumentException("JWT expiration must be positive");
+        }
+        byte[] decodedSecret;
+        try {
+            decodedSecret = Decoders.BASE64.decode(secret);
+        } catch (IllegalArgumentException exception) {
+            throw new IllegalArgumentException("JWT secret must be valid Base64", exception);
+        }
+        if (decodedSecret.length < 32) {
+            throw new IllegalArgumentException("JWT secret must decode to at least 32 bytes");
+        }
+        this.signingKey = Keys.hmacShaKeyFor(decodedSecret);
         this.expirationMillis = expirationMillis;
     }
 

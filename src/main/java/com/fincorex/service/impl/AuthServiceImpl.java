@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
+import java.util.Locale;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -42,13 +43,14 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AuthResponse register(RegisterRequest request) {
-        if (userRepository.findByEmail(request.email()).isPresent()) {
-            throw new EmailAlreadyUsedException(request.email());
+        String email = normalizeEmail(request.email());
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new EmailAlreadyUsedException(email);
         }
 
         User user = new User();
         user.setName(request.name());
-        user.setEmail(request.email());
+        user.setEmail(email);
         user.setPasswordHash(passwordEncoder.encode(request.password()));
         user.setRole(Role.USER);
 
@@ -61,9 +63,9 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponse login(LoginRequest request) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.email(), request.password()));
+                new UsernamePasswordAuthenticationToken(normalizeEmail(request.email()), request.password()));
 
-        User user = userRepository.findByEmail(request.email())
+        User user = userRepository.findByEmail(normalizeEmail(request.email()))
                 .orElseThrow(() -> new IllegalStateException("Authenticated user not found"));
 
         return createAuthResponse(user);
@@ -74,5 +76,9 @@ public class AuthServiceImpl implements AuthService {
                 jwtService.generateToken(user.getEmail(), user.getRole().name()),
                 user.getEmail(),
                 user.getRole().name());
+    }
+
+    private String normalizeEmail(String email) {
+        return email.trim().toLowerCase(Locale.ROOT);
     }
 }

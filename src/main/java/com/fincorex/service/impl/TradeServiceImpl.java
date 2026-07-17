@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Locale;
 
 @Service
 public class TradeServiceImpl implements TradeService {
@@ -46,16 +47,17 @@ public class TradeServiceImpl implements TradeService {
     public TradeResponse executeTrade(TradeRequest request) {
 
         // 1. Wallet
-        Wallet wallet = walletRepository.findById(request.walletId())
+        Wallet wallet = walletRepository.findByIdForUpdate(request.walletId())
                 .orElseThrow(() -> new ResourceNotFoundException("Wallet", request.walletId()));
 
+        String symbol = request.assetSymbol().trim().toUpperCase(Locale.ROOT);
         // 2. Asset
-        Asset asset = assetRepository.findBySymbol(request.assetSymbol())
-                .orElseThrow(() -> new ResourceNotFoundException("Asset", request.assetSymbol()));
+        Asset asset = assetRepository.findBySymbolForUpdate(symbol)
+                .orElseThrow(() -> new ResourceNotFoundException("Asset", symbol));
 
         // 3. WalletAsset (PROFESYONEL QUERY)
         WalletAsset walletAsset = walletAssetRepository
-                .findByWalletIdAndAssetSymbol(
+                .findByWalletIdAndAssetSymbolForUpdate(
                         request.walletId(),
                         asset.getSymbol())
                 .orElse(null);

@@ -6,8 +6,8 @@ import com.fincorex.repository.AuditLogRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
+import org.springframework.context.event.EventListener;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class TradeExecutedEventListener {
@@ -20,7 +20,8 @@ public class TradeExecutedEventListener {
         this.auditLogRepository = auditLogRepository;
     }
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @EventListener
+    @Transactional
     public void handleTradeExecuted(TradeExecutedEvent event) {
         log.info("Trade executed: walletId={}, type={}, symbol={}, quantity={}, total={}",
                 event.walletId(),

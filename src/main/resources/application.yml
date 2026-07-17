@@ -1,23 +1,18 @@
 spring:
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/appdb}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:123456}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   jpa:
     hibernate:
       ddl-auto: validate
-    show-sql: true
+    show-sql: false
+    open-in-view: false
 
   flyway:
     enabled: true
     baseline-on-migrate: true
-
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
-  api-docs:
-    path: /v3/api-docs
 
 security:
   jwt:
@@ -25,3 +20,29 @@ security:
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
+
+market:
+  price-update-ms: ${MARKET_PRICE_UPDATE_MS:15000}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: ${OPENAPI_ENABLED:true}
+  api-docs:
+    path: /v3/api-docs
+    enabled: ${OPENAPI_ENABLED:true}

@@ -73,13 +73,13 @@ class TradeServiceImplTest {
         asset.setSymbol("BTC");
         asset.setPrice(new BigDecimal("10.00"));
 
-        when(walletRepository.findById(walletId)).thenReturn(Optional.of(wallet));
-        when(assetRepository.findBySymbol("BTC")).thenReturn(Optional.of(asset));
+        when(walletRepository.findByIdForUpdate(walletId)).thenReturn(Optional.of(wallet));
+        when(assetRepository.findBySymbolForUpdate("BTC")).thenReturn(Optional.of(asset));
     }
 
     @Test
     void shouldExecuteBuyAndUpdateAverageBuyPrice() {
-        when(walletAssetRepository.findByWalletIdAndAssetSymbol(walletId, "BTC"))
+        when(walletAssetRepository.findByWalletIdAndAssetSymbolForUpdate(walletId, "BTC"))
                 .thenReturn(Optional.empty());
 
         tradeService.executeTrade(new TradeRequest(
@@ -108,7 +108,7 @@ class TradeServiceImplTest {
         walletAsset.setQuantity(new BigDecimal("2.0000"));
         walletAsset.setAverageBuyPrice(new BigDecimal("8.0000"));
 
-        when(walletAssetRepository.findByWalletIdAndAssetSymbol(walletId, "BTC"))
+        when(walletAssetRepository.findByWalletIdAndAssetSymbolForUpdate(walletId, "BTC"))
                 .thenReturn(Optional.of(walletAsset));
 
         wallet.setBalance(BigDecimal.ZERO);
@@ -128,7 +128,7 @@ class TradeServiceImplTest {
 
     @Test
     void shouldRejectBuyWhenWalletBalanceIsInsufficient() {
-        when(walletAssetRepository.findByWalletIdAndAssetSymbol(walletId, "BTC"))
+        when(walletAssetRepository.findByWalletIdAndAssetSymbolForUpdate(walletId, "BTC"))
                 .thenReturn(Optional.empty());
 
         assertThrows(InsufficientBalanceException.class, () -> tradeService.executeTrade(
@@ -142,7 +142,7 @@ class TradeServiceImplTest {
         WalletAsset walletAsset = new WalletAsset();
         walletAsset.setQuantity(new BigDecimal("1.0000"));
 
-        when(walletAssetRepository.findByWalletIdAndAssetSymbol(walletId, "BTC"))
+        when(walletAssetRepository.findByWalletIdAndAssetSymbolForUpdate(walletId, "BTC"))
                 .thenReturn(Optional.of(walletAsset));
 
         assertThrows(InsufficientAssetException.class, () -> tradeService.executeTrade(
